@@ -2,8 +2,11 @@
 
 public class RegisterRequestDto
 {
-    public string FullName { get; set; } = null!;
-    public string Email { get; set; } = null!;
-    public string Password { get; set; } = null!;
-    public int Role { get; set; } // 1 = Admin, 2 = Recruiter, 3 = Candidate
+    public string FullName { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    public string Password { get; set; } = string.Empty;
+
+    public int Role { get; set; }
 }

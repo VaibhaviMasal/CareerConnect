@@ -1,5 +1,5 @@
 ﻿using CareerConnect.Application.DTOs.Authentication;
-using CareerCOnnect.Application.DTOs.AUthentication;
+
 
 namespace CareerConnect.Application.Interfaces;
 

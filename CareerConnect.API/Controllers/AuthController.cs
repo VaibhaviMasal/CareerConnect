@@ -1,6 +1,6 @@
 ﻿using CareerConnect.Application.DTOs.Authentication;
 using CareerConnect.Application.Interfaces;
-using CareerCOnnect.Application.DTOs.AUthentication;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareerConnect.API.Controllers;

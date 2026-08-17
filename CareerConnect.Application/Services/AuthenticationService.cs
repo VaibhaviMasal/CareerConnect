@@ -1,7 +1,7 @@
 ﻿using CareerConnect.Application.DTOs.Authentication;
 using CareerConnect.Application.Interfaces;
 using CareerConnect.Domain.Entities;
-using CareerCOnnect.Application.DTOs.AUthentication;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,13 +13,16 @@ namespace CareerConnect.Application.Services;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IConfiguration _configuration;
 
     public AuthenticationService(
         IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository,
         IConfiguration configuration)
     {
         _userRepository = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
         _configuration = configuration;
     }
 
@@ -96,15 +99,11 @@ public class AuthenticationService : IAuthenticationService
             ?? throw new InvalidOperationException(
                 "JWT audience is not configured.");
 
-        var accessTokenExpiryMinutes =
-            int.Parse(
-                jwtSettings["AccessTokenExpiryMinutes"]
-                ?? "30");
+        var accessTokenExpiryMinutes = int.Parse(
+            jwtSettings["AccessTokenExpiryMinutes"] ?? "30");
 
-        var refreshTokenExpiryDays =
-            int.Parse(
-                jwtSettings["RefreshTokenExpiryDays"]
-                ?? "7");
+        var refreshTokenExpiryDays = int.Parse(
+            jwtSettings["RefreshTokenExpiryDays"] ?? "7");
 
         var claims = new[]
         {
@@ -125,14 +124,12 @@ public class AuthenticationService : IAuthenticationService
                 user.Role.ToString())
         };
 
-        var securityKey =
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(key));
+        var securityKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(key));
 
-        var credentials =
-            new SigningCredentials(
-                securityKey,
-                SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(
+            securityKey,
+            SecurityAlgorithms.HmacSha256);
 
         var jwtToken = new JwtSecurityToken(
             issuer: issuer,
@@ -142,18 +139,27 @@ public class AuthenticationService : IAuthenticationService
                 accessTokenExpiryMinutes),
             signingCredentials: credentials);
 
-        var accessToken =
-            new JwtSecurityTokenHandler()
-                .WriteToken(jwtToken);
+        var accessToken = new JwtSecurityTokenHandler()
+            .WriteToken(jwtToken);
 
-        var refreshToken =
-            Convert.ToBase64String(
-                Guid.NewGuid().ToByteArray());
+        var refreshTokenValue = Convert.ToBase64String(
+            Guid.NewGuid().ToByteArray());
+
+        var refreshToken = new RefreshToken
+        {
+            UserId = user.Id,
+            Token = refreshTokenValue,
+            ExpiresAt = DateTime.UtcNow.AddDays(
+                refreshTokenExpiryDays),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _refreshTokenRepository.AddAsync(refreshToken);
 
         return new AuthResponseDto
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshTokenValue
         };
     }
 }
