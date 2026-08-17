@@ -132,3 +132,28 @@ CREATE TABLE CandidateSkills (
     FOREIGN KEY (SkillId) REFERENCES Skills(Id)
 );
 GO
+
+-- =========================
+-- REFRESH TOKENS
+-- =========================
+CREATE TABLE RefreshTokens (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL,
+    Token NVARCHAR(500) NOT NULL,
+    ExpiresAt DATETIME NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    RevokedAt DATETIME NULL,
+
+    CONSTRAINT FK_RefreshTokens_Users
+        FOREIGN KEY (UserId)
+        REFERENCES Users(Id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT UQ_RefreshTokens_Token
+        UNIQUE (Token)
+);
+GO
+
+CREATE INDEX IX_RefreshTokens_UserId
+ON RefreshTokens(UserId);
+GO

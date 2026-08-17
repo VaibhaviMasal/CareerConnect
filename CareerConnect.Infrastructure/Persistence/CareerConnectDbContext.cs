@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CareerConnect.Infrastructure.Persistence.Entities;
+using CareerConnect.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CareerConnect.Infrastructure.Persistence;
@@ -12,7 +12,7 @@ public partial class CareerConnectDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Application> Applications { get; set; }
+    public DbSet<CareerConnect.Domain.Entities.Application> Applications { get; set; }
 
     public virtual DbSet<CandidateProfile> CandidateProfiles { get; set; }
 
@@ -22,6 +22,8 @@ public partial class CareerConnectDbContext : DbContext
 
     public virtual DbSet<RecruiterProfile> RecruiterProfiles { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<Resume> Resumes { get; set; }
 
     public virtual DbSet<Skill> Skills { get; set; }
@@ -30,7 +32,7 @@ public partial class CareerConnectDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Application>(entity =>
+        modelBuilder.Entity<CareerConnect.Domain.Entities.Application>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Applicat__3214EC07DCE370C2");
 
@@ -110,6 +112,15 @@ public partial class CareerConnectDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Recruite__3214EC07C8E8C124");
 
             entity.HasOne(d => d.User).WithOne(p => p.RecruiterProfile).HasConstraintName("FK__Recruiter__UserI__5441852A");
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__RefreshT__3214EC0793B029E2");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens).HasConstraintName("FK_RefreshTokens_Users");
         });
 
         modelBuilder.Entity<Resume>(entity =>

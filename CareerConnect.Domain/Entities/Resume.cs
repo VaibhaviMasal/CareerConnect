@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace CareerConnect.Infrastructure.Persistence.Entities;
 
-[Index("CandidateId", "VersionNumber", Name = "UQ_Resumes_Candidate_Version", IsUnique = true)]
+namespace CareerConnect.Domain.Entities;
+
+
 public partial class Resume
 {
     [Key]

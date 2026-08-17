@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace CareerConnect.Infrastructure.Persistence.Entities;
 
-[Index("Email", Name = "UQ__Users__A9D10534111A613E", IsUnique = true)]
+namespace CareerConnect.Domain.Entities;
+
+
 public partial class User
 {
     [Key]
@@ -33,4 +33,7 @@ public partial class User
 
     [InverseProperty("User")]
     public virtual RecruiterProfile? RecruiterProfile { get; set; }
+
+    [InverseProperty("User")]
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

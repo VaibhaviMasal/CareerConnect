@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace CareerConnect.Infrastructure.Persistence.Entities;
 
-[Index("Location", Name = "IX_CandidateProfiles_Location")]
-[Index("UserId", Name = "UQ__Candidat__1788CC4DDAED244E", IsUnique = true)]
+namespace CareerConnect.Domain.Entities;
+
+
 public partial class CandidateProfile
 {
     [Key]

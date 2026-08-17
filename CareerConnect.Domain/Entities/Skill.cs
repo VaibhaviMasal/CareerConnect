@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace CareerConnect.Infrastructure.Persistence.Entities;
 
-[Index("Name", Name = "UQ__Skills__737584F62838DC36", IsUnique = true)]
+namespace CareerConnect.Domain.Entities;
+
+
 public partial class Skill
 {
     [Key]

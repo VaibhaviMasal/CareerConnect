@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace CareerConnect.Infrastructure.Persistence.Entities;
 
-[Index("Location", Name = "IX_JobPostings_Location")]
+namespace CareerConnect.Domain.Entities;
+
+
 public partial class JobPosting
 {
     [Key]

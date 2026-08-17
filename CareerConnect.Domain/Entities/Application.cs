@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace CareerConnect.Infrastructure.Persistence.Entities;
 
-[Index("CandidateId", Name = "IX_Applications_CandidateId")]
-[Index("JobPostingId", Name = "IX_Applications_JobPostingId")]
-[Index("CandidateId", "JobPostingId", Name = "UQ_Candidate_Job", IsUnique = true)]
+namespace CareerConnect.Domain.Entities;
+
+
 public partial class Application
 {
     [Key]
