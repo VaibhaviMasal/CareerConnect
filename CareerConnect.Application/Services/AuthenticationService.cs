@@ -23,77 +23,137 @@ public class AuthenticationService : IAuthenticationService
         _configuration = configuration;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
+    public async Task<AuthResponseDto> RegisterAsync(
+        RegisterRequestDto request)
     {
-        var existingUser = await _userRepository.GetByEmailAsync(request.Email);
+        var existingUser = await _userRepository
+            .GetByEmailAsync(request.Email);
 
         if (existingUser != null)
-            throw new Exception("User already exists");
+        {
+            throw new InvalidOperationException(
+                "A user with this email already exists.");
+        }
 
         var user = new User
         {
             FullName = request.FullName,
             Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = 1, // default role (candidate)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(
+                request.Password),
+            Role = request.Role,
             CreatedAt = DateTime.UtcNow,
             IsActive = true
         };
 
         await _userRepository.AddAsync(user);
 
-        var token = GenerateJwtToken(user);
-
-        return new AuthResponseDto
-        {
-            Token = token,
-            Email = user.Email,
-            FullName = user.FullName
-        };
+        return await GenerateTokensAsync(user);
     }
 
-    public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
+    public async Task<AuthResponseDto> LoginAsync(
+        LoginRequestDto request)
     {
-        var user = await _userRepository.GetByEmailAsync(request.Email);
+        var user = await _userRepository
+            .GetByEmailAsync(request.Email);
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            throw new Exception("Invalid credentials");
-
-        var token = GenerateJwtToken(user);
-
-        return new AuthResponseDto
+        if (user == null)
         {
-            Token = token,
-            Email = user.Email,
-            FullName = user.FullName
-        };
+            throw new UnauthorizedAccessException(
+                "Invalid email or password.");
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(
+                request.Password,
+                user.PasswordHash))
+        {
+            throw new UnauthorizedAccessException(
+                "Invalid email or password.");
+        }
+
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAccessException(
+                "User account is inactive.");
+        }
+
+        return await GenerateTokensAsync(user);
     }
 
-    // 🔐 JWT Token Generator
-    private string GenerateJwtToken(User user)
+    private async Task<AuthResponseDto> GenerateTokensAsync(User user)
     {
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
-        );
+        var jwtSettings = _configuration.GetSection("Jwt");
 
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var key = jwtSettings["Key"]
+            ?? throw new InvalidOperationException(
+                "JWT key is not configured.");
+
+        var issuer = jwtSettings["Issuer"]
+            ?? throw new InvalidOperationException(
+                "JWT issuer is not configured.");
+
+        var audience = jwtSettings["Audience"]
+            ?? throw new InvalidOperationException(
+                "JWT audience is not configured.");
+
+        var accessTokenExpiryMinutes =
+            int.Parse(
+                jwtSettings["AccessTokenExpiryMinutes"]
+                ?? "30");
+
+        var refreshTokenExpiryDays =
+            int.Parse(
+                jwtSettings["RefreshTokenExpiryDays"]
+                ?? "7");
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, user.FullName),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(
+                ClaimTypes.NameIdentifier,
+                user.Id.ToString()),
+
+            new Claim(
+                ClaimTypes.Email,
+                user.Email),
+
+            new Claim(
+                ClaimTypes.Name,
+                user.FullName),
+
+            new Claim(
+                ClaimTypes.Role,
+                user.Role.ToString())
         };
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: credentials
-        );
+        var securityKey =
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(key));
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var credentials =
+            new SigningCredentials(
+                securityKey,
+                SecurityAlgorithms.HmacSha256);
+
+        var jwtToken = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(
+                accessTokenExpiryMinutes),
+            signingCredentials: credentials);
+
+        var accessToken =
+            new JwtSecurityTokenHandler()
+                .WriteToken(jwtToken);
+
+        var refreshToken =
+            Convert.ToBase64String(
+                Guid.NewGuid().ToByteArray());
+
+        return new AuthResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 }
