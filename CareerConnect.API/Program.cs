@@ -52,6 +52,10 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
+builder.Services.AddScoped<
+    IUserRepository,
+    UserRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
