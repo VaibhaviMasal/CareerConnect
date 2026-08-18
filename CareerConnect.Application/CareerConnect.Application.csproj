@@ -21,7 +21,6 @@
     <Folder Include="Features\Candidates\Mapping\" />
     <Folder Include="Features\Candidates\Validators\" />
     <Folder Include="Features\Candidates\Services\" />
-    <Folder Include="Features\Interviews\DTOs\" />
     <Folder Include="Features\Interviews\Interfaces\" />
     <Folder Include="Features\Interviews\Mappings\" />
     <Folder Include="Features\Interviews\Validators\" />

@@ -1,33 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace CareerConnect.Domain.Entities;
 
-
-namespace CareerConnect.Domain.Entities;
-
-public partial class InterviewSchedule
+public class InterviewSchedule
 {
-    [Key]
     public int Id { get; set; }
 
     public int ApplicationId { get; set; }
+    public JobApplication Application { get; set; }
 
-    [Column(TypeName = "datetime")]
-    public DateTime? InterviewDate { get; set; }
+    public DateTime ScheduledAt { get; set; }
 
-    public int? Mode { get; set; }
+    public string Mode { get; set; } // Online / Offline
 
-    [StringLength(300)]
-    public string? LocationOrLink { get; set; }
+    public string? MeetingLink { get; set; }
 
-    [StringLength(500)]
-    public string? Notes { get; set; }
+    public string Status { get; set; } = "Scheduled";
+    // Scheduled / Completed / Cancelled
 
-    [Column(TypeName = "datetime")]
     public DateTime CreatedAt { get; set; }
-
-    [ForeignKey("ApplicationId")]
-    [InverseProperty("InterviewSchedules")]
-    public  JobApplication Application { get; set; } = null!;
 }
