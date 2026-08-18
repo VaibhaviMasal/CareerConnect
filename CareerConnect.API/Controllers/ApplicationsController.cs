@@ -2,6 +2,8 @@
 using CareerConnect.Application.Features.Applications.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 
 namespace CareerConnect.API.Controllers;
 
@@ -24,5 +26,15 @@ public class ApplicationsController : ControllerBase
         await _applicationService.ApplyAsync(dto);
 
         return Ok("Applied successfully");
+    }
+
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyApplications()
+    {
+        var candidateId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var result = await _applicationService.GetMyApplicationsAsync(candidateId);
+
+        return Ok(result);
     }
 }

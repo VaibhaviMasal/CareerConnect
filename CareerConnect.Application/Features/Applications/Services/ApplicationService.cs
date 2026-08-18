@@ -26,4 +26,19 @@ public class ApplicationService : IApplicationService
 
         await _applicationRepository.AddAsync(application);
     }
+
+    public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int candidateId)
+    {
+        var applications = await _applicationRepository.GetByCandidateIdAsync(candidateId);
+
+        return applications.Select(a => new ApplicationResponseDto
+        {
+            Id = a.Id,
+            JobId = a.JobPostingId,
+            JobTitle = a.JobPosting.Title,
+            CompanyName = a.JobPosting.Recruiter.CompanyName,
+            AppliedAt = a.AppliedAt,
+            Status = a.Status
+        }).ToList();
+    }
 }

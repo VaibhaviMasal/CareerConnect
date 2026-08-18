@@ -3,6 +3,8 @@ using CareerConnect.Domain.Entities;
 using CareerConnect.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
+namespace CareerConnect.Infrastructure.Repositories;
+
 public class JobRepository : IJobRepository
 {
     private readonly CareerConnectDbContext _context;
@@ -12,38 +14,19 @@ public class JobRepository : IJobRepository
         _context = context;
     }
 
-    public async Task AddAsync(Job job)
+    public async Task AddAsync(JobPosting job)
     {
-        await _context.Jobs.AddAsync(job);
+        await _context.JobPostings.AddAsync(job);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Job>> GetAllAsync()
+    public async Task<List<JobPosting>> GetAllJobsAsync()
     {
-        return await _context.Jobs.ToListAsync();
+        return await _context.JobPostings.ToListAsync();
     }
 
-    public async Task<Job?> GetByIdAsync(int id)
+    public async Task<JobPosting?> GetByIdAsync(int id)
     {
-        return await _context.Jobs.FirstOrDefaultAsync(j => j.Id == id);
-    }
-
-    public async Task<List<Job>> GetByRecruiterIdAsync(int recruiterId)
-    {
-        return await _context.Jobs
-            .Where(j => j.RecruiterId == recruiterId)
-            .ToListAsync();
-    }
-
-    public async Task UpdateAsync(Job job)
-    {
-        _context.Jobs.Update(job);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(Job job)
-    {
-        _context.Jobs.Remove(job);
-        await _context.SaveChangesAsync();
+        return await _context.JobPostings.FindAsync(id);
     }
 }

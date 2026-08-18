@@ -3,6 +3,7 @@ using CareerConnect.Application.Features.Applications.Services;
 using CareerConnect.Application.Features.Authentication.Interfaces;
 using CareerConnect.Application.Features.Authentication.Services;
 using CareerConnect.Application.Features.Jobs.Interfaces;
+using CareerConnect.Application.Features.Jobs.Services;
 using CareerConnect.Application.Features.Users.Interfaces;
 using CareerConnect.Infrastructure.Persistence;
 using CareerConnect.Infrastructure.Repositories;

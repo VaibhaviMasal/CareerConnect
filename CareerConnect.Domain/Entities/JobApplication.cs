@@ -23,5 +23,6 @@ public partial class JobApplication
     public virtual JobPosting JobPosting { get; set; } = null!;
     public virtual Resume Resume { get; set; } = null!;
 
-    public virtual ICollection<InterviewSchedule> InterviewSchedules { get; set; } = new List<InterviewSchedule>();
+    public ICollection<InterviewSchedule> InterviewSchedules { get; set; }
+    = new List<InterviewSchedule>();
 }

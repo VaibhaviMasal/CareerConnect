@@ -10,7 +10,9 @@ public partial class CareerConnectDbContext : DbContext
     {
     }
 
-    public DbSet<JobApplication> Applications { get; set; }
+    // 🔥 IMPORTANT: keep naming consistent
+    public DbSet<JobApplication> JobApplications { get; set; }
+
     public DbSet<CandidateProfile> CandidateProfiles { get; set; }
     public DbSet<InterviewSchedule> InterviewSchedules { get; set; }
     public DbSet<JobPosting> JobPostings { get; set; }
@@ -19,12 +21,14 @@ public partial class CareerConnectDbContext : DbContext
     public DbSet<Resume> Resumes { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<User> Users { get; set; }
-    public DbSet<Job> Jobs { get; set; }
+
+    // ❌ REMOVE this if not needed (confusing duplicate)
+    // public DbSet<Job> Jobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // =========================
-        // APPLICATION
+        // JOB APPLICATION
         // =========================
         modelBuilder.Entity<JobApplication>(entity =>
         {
@@ -96,7 +100,8 @@ public partial class CareerConnectDbContext : DbContext
 
             entity.HasOne(e => e.Recruiter)
                   .WithMany(r => r.JobPostings)
-                  .HasForeignKey(e => e.RecruiterId);
+                  .HasForeignKey(e => e.RecruiterId)
+                  .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasMany(e => e.Skills)
                   .WithMany(s => s.JobPostings)
@@ -145,7 +150,8 @@ public partial class CareerConnectDbContext : DbContext
 
             entity.HasOne(e => e.Candidate)
                   .WithMany(c => c.Resumes)
-                  .HasForeignKey(e => e.CandidateId);
+                  .HasForeignKey(e => e.CandidateId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =========================
@@ -168,15 +174,6 @@ public partial class CareerConnectDbContext : DbContext
 
             entity.Property(e => e.IsActive)
                   .HasDefaultValue(true);
-        });
-
-        // =========================
-        // JOB (Your custom Jobs API entity)
-        // =========================
-        modelBuilder.Entity<Job>(entity =>
-        {
-            entity.Property(e => e.Salary)
-                  .HasPrecision(18, 2);
         });
     }
 }

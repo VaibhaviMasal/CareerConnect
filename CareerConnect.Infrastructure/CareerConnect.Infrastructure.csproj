@@ -16,7 +16,6 @@
     <Folder Include="FileStorage\" />
     <Folder Include="Migrations\" />
     <Folder Include="Services\" />
-    <Folder Include="Persistence\" />
   </ItemGroup>
 
   <ItemGroup>
