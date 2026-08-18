@@ -37,4 +37,28 @@ public class ApplicationsController : ControllerBase
 
         return Ok(result);
     }
+
+    // GET: api/applications/job/10
+    [HttpGet("job/{jobId}")]
+    public async Task<IActionResult> GetByJob(int jobId)
+    {
+        var result = await _applicationService.GetApplicationsByJobAsync(jobId);
+        return Ok(result);
+    }
+
+    // PUT: api/applications/5/status?status=1
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, int status)
+    {
+        await _applicationService.UpdateStatusAsync(id, status);
+        return Ok("Status updated");
+    }
+
+    // DELETE: api/applications/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _applicationService.DeleteAsync(id);
+        return Ok("Deleted successfully");
+    }
 }
