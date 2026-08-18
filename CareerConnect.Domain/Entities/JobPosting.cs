@@ -27,10 +27,12 @@ public partial class JobPosting
     public int MaxExperience { get; set; }
 
     [Column(TypeName = "datetime")]
-    public DateTime Deadline { get; set; }
+    public DateTime? Deadline { get; set; }
 
     [Column(TypeName = "datetime")]
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public bool IsActive { get; set; }
 

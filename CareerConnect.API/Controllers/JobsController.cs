@@ -1,59 +1,78 @@
 ﻿using CareerConnect.Application.Features.Applications.Interfaces;
+using CareerConnect.Application.Features.Jobs.DTOs;
 using CareerConnect.Application.Features.Jobs.Interfaces;
 using CareerConnect.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CareerConnect.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Recruiter")]
 public class JobsController : ControllerBase
 {
     private readonly IJobService _jobService;
+    private readonly IApplicationService _applicationService;
 
-    public JobsController(IJobService jobService)
+    public JobsController(
+        IJobService jobService,
+        IApplicationService applicationService)
     {
         _jobService = jobService;
+        _applicationService = applicationService;
     }
-    private readonly IApplicationService _applicationService;
+
 
     // ✅ CREATE JOB
     [HttpPost]
-    public async Task<IActionResult> CreateJob([FromBody] JobPosting job)
+    public async Task<IActionResult> Create(CreateJobRequestDto request)
     {
-        await _jobService.CreateJobAsync(job);
+        var recruiterId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+        await _jobService.CreateJobAsync(request, recruiterId);
+
         return Ok("Job created successfully");
     }
 
     // ✅ GET ALL JOBS
     [HttpGet]
-    public async Task<IActionResult> GetAllJobs()
+    public async Task<IActionResult> GetAll()
     {
         var jobs = await _jobService.GetAllJobsAsync();
         return Ok(jobs);
     }
 
-    // ✅ GET JOB BY ID
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetJobById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var job = await _jobService.GetJobByIdAsync(id);
-
-        if (job == null)
-            return NotFound();
+        if (job == null) return NotFound();
 
         return Ok(job);
     }
 
-
     [HttpGet("my")]
-    public async Task<IActionResult> GetMyApplications()
+    public async Task<IActionResult> GetMyJobs()
     {
-        // for now hardcode (we'll fix auth later)
-        int candidateId = 1;
+        int recruiterId = 3; // TEMP
+        var jobs = await _jobService.GetJobsByRecruiterAsync(recruiterId);
 
-        var result = await _applicationService.GetMyApplicationsAsync(candidateId);
+        return Ok(jobs);
+    }
 
-        return Ok(result);
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, CreateJobRequestDto request)
+    {
+        await _jobService.UpdateJobAsync(id, request);
+        return Ok("Updated");
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _jobService.DeleteJobAsync(id);
+        return Ok("Deleted");
     }
 }

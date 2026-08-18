@@ -92,8 +92,8 @@ public partial class CareerConnectDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.CreatedAt)
-                  .HasDefaultValueSql("GETDATE()");
+            entity.Property(j => j.CreatedAt)
+                  .HasDefaultValueSql("GETUTCDATE()");
 
             entity.Property(e => e.IsActive)
                   .HasDefaultValue(true);

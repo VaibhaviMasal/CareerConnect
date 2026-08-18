@@ -43,7 +43,8 @@ builder.Services.AddScoped<IApplicationService, ApplicationService>();
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
-builder.Services.AddScoped<IApplicationService, ApplicationService>();
+
+
 
 builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
 
