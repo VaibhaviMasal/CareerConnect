@@ -30,6 +30,8 @@ public partial class CareerConnectDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public DbSet<Job> Jobs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CareerConnect.Domain.Entities.Application>(entity =>
@@ -147,6 +149,12 @@ public partial class CareerConnectDbContext : DbContext
         });
 
         OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<Job>(entity =>
+        {
+            entity.Property(e => e.Salary)
+                  .HasPrecision(18, 2); // ✅ 18 total digits, 2 after decimal
+        });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

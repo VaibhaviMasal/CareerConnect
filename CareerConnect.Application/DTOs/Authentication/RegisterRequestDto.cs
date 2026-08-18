@@ -1,4 +1,6 @@
-﻿namespace CareerConnect.Application.DTOs.Authentication;
+﻿using CareerConnect.Domain.Enums;
+
+namespace CareerConnect.Application.DTOs.Authentication;
 
 public class RegisterRequestDto
 {
@@ -8,5 +10,5 @@ public class RegisterRequestDto
 
     public string Password { get; set; } = string.Empty;
 
-    public int Role { get; set; }
+    public UserRole Role { get; set; }
 }

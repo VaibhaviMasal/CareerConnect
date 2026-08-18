@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using CareerConnect.Domain.Enums;
 
 namespace CareerConnect.Domain.Entities;
 
@@ -21,7 +21,7 @@ public partial class User
     [StringLength(255)]
     public string PasswordHash { get; set; } = null!;
 
-    public int Role { get; set; }
+    public UserRole Role { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedAt { get; set; }
