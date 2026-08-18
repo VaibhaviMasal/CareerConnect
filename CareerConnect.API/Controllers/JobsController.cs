@@ -1,4 +1,5 @@
-﻿using CareerConnect.Application.Features.Jobs.Interfaces;
+﻿using CareerConnect.Application.Features.Applications.Interfaces;
+using CareerConnect.Application.Features.Jobs.Interfaces;
 using CareerConnect.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ public class JobsController : ControllerBase
     {
         _jobService = jobService;
     }
+    private readonly IApplicationService _applicationService;
 
     // ✅ CREATE JOB
     [HttpPost]
@@ -41,5 +43,17 @@ public class JobsController : ControllerBase
             return NotFound();
 
         return Ok(job);
+    }
+
+
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyApplications()
+    {
+        // for now hardcode (we'll fix auth later)
+        int candidateId = 1;
+
+        var result = await _applicationService.GetMyApplicationsAsync(candidateId);
+
+        return Ok(result);
     }
 }

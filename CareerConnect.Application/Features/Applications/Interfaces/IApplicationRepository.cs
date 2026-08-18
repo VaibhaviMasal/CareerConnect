@@ -7,4 +7,6 @@ public interface IApplicationRepository
     Task AddAsync(JobApplication application);
 
     Task<List<JobApplication>> GetByCandidateIdAsync(int candidateId);
+
+
 }

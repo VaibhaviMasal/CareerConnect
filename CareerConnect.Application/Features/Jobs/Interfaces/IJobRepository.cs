@@ -7,4 +7,6 @@ public interface IJobRepository
     Task AddAsync(JobPosting job);
     Task<List<JobPosting>> GetAllJobsAsync();
     Task<JobPosting?> GetByIdAsync(int id);
+
+    
 }
