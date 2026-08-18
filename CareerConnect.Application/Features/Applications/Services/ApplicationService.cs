@@ -13,36 +13,32 @@ public class ApplicationService : IApplicationService
         _applicationRepository = applicationRepository;
     }
 
-    public async Task ApplyAsync(ApplyJobRequestDto dto)
+    public async Task ApplyAsync(CreateApplicationDto request, int userId)
     {
         var application = new JobApplication
         {
-            CandidateId = dto.CandidateId,
-            JobPostingId = dto.JobId,
-            ResumeId = dto.ResumeId,
-            Status = 0,
-            AppliedAt = DateTime.UtcNow
+            JobPostingId = request.JobId,
+            CandidateId = userId,
+            AppliedAt = DateTime.UtcNow,
+            Status = "Applied"
         };
 
         await _applicationRepository.AddAsync(application);
     }
 
-    public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int candidateId)
+    public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int userId)
     {
-        var applications = await _applicationRepository.GetByCandidateIdAsync(candidateId);
+        var applications = await _applicationRepository.GetByCandidateIdAsync(userId);
 
         return applications.Select(a => new ApplicationResponseDto
         {
             Id = a.Id,
-            JobId = a.JobPostingId,
-            JobTitle = a.JobPosting.Title,
-            CompanyName = a.JobPosting.Recruiter.CompanyName,
-            AppliedAt = a.AppliedAt,
-            Status = a.Status
+            JobId = a.JobPostingId,   // int → int ✅
+            Status = a.Status         // string → string ✅
         }).ToList();
     }
 
-    public async Task<List<ApplicationResponseDto>> GetApplicationsByJobAsync(int jobId)
+    public async Task<List<ApplicationResponseDto>> GetByJobIdAsync(int jobId)
     {
         var applications = await _applicationRepository.GetByJobIdAsync(jobId);
 
@@ -50,35 +46,29 @@ public class ApplicationService : IApplicationService
         {
             Id = a.Id,
             JobId = a.JobPostingId,
-            JobTitle = a.JobPosting?.Title,
-            CompanyName = a.JobPosting?.Recruiter?.CompanyName,
-            AppliedAt = a.AppliedAt,
             Status = a.Status
         }).ToList();
     }
 
-    public async Task UpdateStatusAsync(int id, int status)
+    public async Task UpdateStatusAsync(int id, string status)
     {
-        var application = await _applicationRepository.GetByIdAsync(id);
+        var app = await _applicationRepository.GetByIdAsync(id);
 
-        if (application == null)
+        if (app == null)
             throw new Exception("Application not found");
 
-        application.Status = status;
+        app.Status = status;
 
-        await _applicationRepository.UpdateAsync(application);
+        await _applicationRepository.UpdateAsync(app);
     }
 
     public async Task DeleteAsync(int id)
     {
-        var application = await _applicationRepository.GetByIdAsync(id);
+        var app = await _applicationRepository.GetByIdAsync(id);
 
-        if (application == null)
+        if (app == null)
             throw new Exception("Application not found");
 
-        await _applicationRepository.DeleteAsync(application);
+        await _applicationRepository.DeleteAsync(app);
     }
-
-
-
 }

@@ -8,6 +8,7 @@ namespace CareerConnect.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+
 public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
@@ -17,6 +18,7 @@ public class AuthController : ControllerBase
         _authenticationService = authenticationService;
     }
 
+    [Authorize(Roles = "Candidate")]
     [HttpPost("register")]
     public async Task<IActionResult> Register(
         [FromBody] RegisterRequestDto request)

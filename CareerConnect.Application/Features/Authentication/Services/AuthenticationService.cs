@@ -27,24 +27,21 @@ public class AuthenticationService : IAuthenticationService
         _configuration = configuration;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(
-        RegisterRequestDto request)
+    // ================= REGISTER =================
+    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
-        var existingUser = await _userRepository
-            .GetByEmailAsync(request.Email);
+        var existingUser = await _userRepository.GetByEmailAsync(request.Email);
 
         if (existingUser != null)
         {
-            throw new InvalidOperationException(
-                "A user with this email already exists.");
+            throw new InvalidOperationException("User already exists.");
         }
 
         var user = new User
         {
             FullName = request.FullName,
             Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(
-                request.Password),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
             Role = request.Role,
             CreatedAt = DateTime.UtcNow,
             IsActive = true
@@ -55,103 +52,66 @@ public class AuthenticationService : IAuthenticationService
         return await GenerateTokensAsync(user);
     }
 
-    public async Task<AuthResponseDto> LoginAsync(
-        LoginRequestDto request)
+    // ================= LOGIN =================
+    public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _userRepository
-            .GetByEmailAsync(request.Email);
+        var user = await _userRepository.GetByEmailAsync(request.Email);
 
         if (user == null)
-        {
-            throw new UnauthorizedAccessException(
-                "Invalid email or password.");
-        }
+            throw new UnauthorizedAccessException("Invalid email or password.");
 
-        if (!BCrypt.Net.BCrypt.Verify(
-                request.Password,
-                user.PasswordHash))
-        {
-            throw new UnauthorizedAccessException(
-                "Invalid email or password.");
-        }
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            throw new UnauthorizedAccessException("Invalid email or password.");
 
         if (!user.IsActive)
-        {
-            throw new UnauthorizedAccessException(
-                "User account is inactive.");
-        }
+            throw new UnauthorizedAccessException("User is inactive.");
 
         return await GenerateTokensAsync(user);
     }
 
+    // ================= TOKEN GENERATION =================
     private async Task<AuthResponseDto> GenerateTokensAsync(User user)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
 
-        var key = jwtSettings["Key"]
-            ?? throw new InvalidOperationException(
-                "JWT key is not configured.");
+        var key = jwtSettings["Key"]!;
+        var issuer = jwtSettings["Issuer"]!;
+        var audience = jwtSettings["Audience"]!;
 
-        var issuer = jwtSettings["Issuer"]
-            ?? throw new InvalidOperationException(
-                "JWT issuer is not configured.");
+        var accessTokenExpiryMinutes = int.Parse(jwtSettings["AccessTokenExpiryMinutes"] ?? "30");
+        var refreshTokenExpiryDays = int.Parse(jwtSettings["RefreshTokenExpiryDays"] ?? "7");
 
-        var audience = jwtSettings["Audience"]
-            ?? throw new InvalidOperationException(
-                "JWT audience is not configured.");
-
-        var accessTokenExpiryMinutes = int.Parse(
-            jwtSettings["AccessTokenExpiryMinutes"] ?? "30");
-
-        var refreshTokenExpiryDays = int.Parse(
-            jwtSettings["RefreshTokenExpiryDays"] ?? "7");
+        // 🔥 FIXED ROLE MAPPING HERE
+        string roleName = user.Role.ToString();
 
         var claims = new[]
         {
-            new Claim(
-                ClaimTypes.NameIdentifier,
-                user.Id.ToString()),
-
-            new Claim(
-                ClaimTypes.Email,
-                user.Email),
-
-            new Claim(
-                ClaimTypes.Name,
-                user.FullName),
-
-            new Claim(
-                ClaimTypes.Role,
-                user.Role.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user.FullName),
+            new Claim(ClaimTypes.Role, roleName) // ✅ FIXED
         };
 
-        var securityKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(key));
-
-        var credentials = new SigningCredentials(
-            securityKey,
-            SecurityAlgorithms.HmacSha256);
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var jwtToken = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(
-                accessTokenExpiryMinutes),
+            expires: DateTime.UtcNow.AddMinutes(accessTokenExpiryMinutes),
             signingCredentials: credentials);
 
-        var accessToken = new JwtSecurityTokenHandler()
-            .WriteToken(jwtToken);
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
-        var refreshTokenValue = Convert.ToBase64String(
-            Guid.NewGuid().ToByteArray());
+        // 🔁 Refresh Token
+        var refreshTokenValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 
         var refreshToken = new RefreshToken
         {
             UserId = user.Id,
             Token = refreshTokenValue,
-            ExpiresAt = DateTime.UtcNow.AddDays(
-                refreshTokenExpiryDays),
+            ExpiresAt = DateTime.UtcNow.AddDays(refreshTokenExpiryDays),
             CreatedAt = DateTime.UtcNow
         };
 

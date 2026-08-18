@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-
 namespace CareerConnect.API.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class ApplicationsController : ControllerBase
 {
     private readonly IApplicationService _applicationService;
@@ -18,47 +17,67 @@ public class ApplicationsController : ControllerBase
         _applicationService = applicationService;
     }
 
-    // 👇 APPLY JOB
+    // APPLY
+    [Authorize(Roles = "Candidate")]
     [HttpPost("apply")]
-    //[Authorize(Roles = "Candidate")]
-    public async Task<IActionResult> ApplyJob([FromBody] ApplyJobRequestDto dto)
+    public async Task<IActionResult> Apply(CreateApplicationDto request)
     {
-        await _applicationService.ApplyAsync(dto);
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdStr == null)
+            return Unauthorized();
+
+        int userId = int.Parse(userIdStr);
+
+        await _applicationService.ApplyAsync(request, userId);
 
         return Ok("Applied successfully");
     }
 
+    // MY APPLICATIONS
+    [Authorize(Roles = "Candidate")]
     [HttpGet("my")]
-    public async Task<IActionResult> GetMyApplications()
+    public async Task<IActionResult> My()
     {
-        var candidateId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var result = await _applicationService.GetMyApplicationsAsync(candidateId);
+        if (userIdStr == null)
+            return Unauthorized();
 
-        return Ok(result);
+        int userId = int.Parse(userIdStr);
+
+        var data = await _applicationService.GetMyApplicationsAsync(userId);
+
+        return Ok(data);
     }
 
-    // GET: api/applications/job/10
+    // GET BY JOB
+    [Authorize(Roles = "Recruiter")]
     [HttpGet("job/{jobId}")]
     public async Task<IActionResult> GetByJob(int jobId)
     {
-        var result = await _applicationService.GetApplicationsByJobAsync(jobId);
-        return Ok(result);
+        var data = await _applicationService.GetByJobIdAsync(jobId);
+
+        return Ok(data);
     }
 
-    // PUT: api/applications/5/status?status=1
+    // UPDATE STATUS
+    [Authorize(Roles = "Recruiter")]
     [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, int status)
+    public async Task<IActionResult> UpdateStatus(int id, UpdateStatusDto request)
     {
-        await _applicationService.UpdateStatusAsync(id, status);
-        return Ok("Status updated");
+        await _applicationService.UpdateStatusAsync(id, request.Status);
+
+        return Ok("Updated");
     }
 
-    // DELETE: api/applications/5
+    // DELETE
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         await _applicationService.DeleteAsync(id);
-        return Ok("Deleted successfully");
+
+        return Ok("Deleted");
     }
 }

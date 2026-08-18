@@ -4,11 +4,13 @@ namespace CareerConnect.Application.Features.Applications.Interfaces;
 
 public interface IApplicationService
 {
-    Task ApplyAsync(ApplyJobRequestDto dto);
+    Task ApplyAsync(CreateApplicationDto request, int userId);
 
-    Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int candidateId);
+    Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int userId);
 
-    Task<List<ApplicationResponseDto>> GetApplicationsByJobAsync(int jobId);
-    Task UpdateStatusAsync(int id, int status);
+    Task<List<ApplicationResponseDto>> GetByJobIdAsync(int jobId);
+
+    Task UpdateStatusAsync(int id, string status);
+
     Task DeleteAsync(int id);
 }

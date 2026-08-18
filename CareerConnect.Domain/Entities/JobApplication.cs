@@ -14,7 +14,8 @@ public partial class JobApplication
     public int JobPostingId { get; set; }
     public int ResumeId { get; set; }
 
-    public int Status { get; set; }
+
+    public string Status { get; set; } = string.Empty;
 
     public DateTime AppliedAt { get; set; }
 

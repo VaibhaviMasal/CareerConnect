@@ -35,10 +35,8 @@
     <Folder Include="Features\Resumes\Mappings\" />
     <Folder Include="Features\Resumes\Validators\" />
     <Folder Include="Features\Resumes\Services\" />
-    <Folder Include="Features\Users\DTOs\" />
     <Folder Include="Features\Users\Mappings\" />
     <Folder Include="Features\Users\Validators\" />
-    <Folder Include="Features\Users\Services\" />
   </ItemGroup>
 
   <ItemGroup>
