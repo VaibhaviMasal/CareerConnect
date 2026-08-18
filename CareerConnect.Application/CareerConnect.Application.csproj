@@ -23,7 +23,6 @@
     <Folder Include="Features\Candidates\Services\" />
     <Folder Include="Features\Interviews\Mappings\" />
     <Folder Include="Features\Interviews\Validators\" />
-    <Folder Include="Features\Interviews\Services\" />
     <Folder Include="Features\Jobs\Mappings\" />
     <Folder Include="Features\Jobs\Validators\" />
     <Folder Include="Features\Recruiters\DTOs\" />
