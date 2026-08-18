@@ -1,4 +1,4 @@
-﻿using CareerConnect.Application.Interfaces;
+﻿using CareerConnect.Application.Features.Jobs.Interfaces;
 using CareerConnect.Domain.Entities;
 using CareerConnect.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

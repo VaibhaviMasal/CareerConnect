@@ -1,47 +1,86 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using CareerConnect.Infrastructure.Persistence;
+﻿using CareerConnect.Application.Features.Jobs.DTOs;
+using CareerConnect.Application.Features.Jobs.Interfaces;
 using CareerConnect.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
 public class JobsController : ControllerBase
 {
-    private readonly CareerConnectDbContext _context;
+    private readonly IJobService _jobService;
 
-    public JobsController(CareerConnectDbContext context)
+    public JobsController(IJobService jobService)
     {
-        _context = context;
+        _jobService = jobService;
     }
 
-    // 🔐 Recruiter only
-    [Authorize(Roles = "Recruiter")]
+    // 🔐 RECRUITER ONLY → Create Job
     [HttpPost]
-    public async Task<IActionResult> CreateJob(CreateJobRequestDto request)
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> CreateJob(CreateJobRequest request)
     {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await _jobService.AddAsync(request, User);
+        return Ok("Job created successfully");
+    }
 
-        var job = new Job
-        {
-            Title = request.Title,
-            Description = request.Description,
-            Location = request.Location,
-            Salary = request.Salary,
-            CreatedBy = userId
-        };
+    // 🌍 PUBLIC → Get all jobs
+    [HttpGet]
+    public async Task<IActionResult> GetAllJobs()
+    {
+        var jobs = await _jobService.GetAllJobsAsync();
+        return Ok(jobs);
+    }
 
-        _context.Jobs.Add(job);
-        await _context.SaveChangesAsync();
+    // 🌍 PUBLIC → Get job by ID
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetJobById(int id)
+    {
+        var job = await _jobService.GetJobByIdAsync(id);
+
+        if (job == null)
+            return NotFound();
 
         return Ok(job);
     }
 
-    // 👀 Anyone logged in
-    [Authorize]
-    [HttpGet]
-    public IActionResult GetAllJobs()
+    // 🔐 RECRUITER → Get own jobs
+    [HttpGet("my-jobs")]
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> GetMyJobs()
     {
-        return Ok(_context.Jobs.ToList());
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var jobs = await _jobService.GetJobsByRecruiterAsync(userId);
+
+        return Ok(jobs);
+    }
+
+    // 🔐 RECRUITER → Update job
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> UpdateJob(int id, [FromBody] Job job)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        job.Id = id;
+        job.RecruiterId = userId;
+
+        await _jobService.UpdateJobAsync(job);
+
+        return Ok("Job updated");
+    }
+
+    // 🔐 RECRUITER → Delete job
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> DeleteJob(int id)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        await _jobService.DeleteJobAsync(id, userId);
+
+        return Ok("Job deleted");
     }
 }

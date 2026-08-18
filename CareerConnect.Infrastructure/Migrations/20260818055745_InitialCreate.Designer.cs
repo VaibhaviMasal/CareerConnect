@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerConnect.Infrastructure.Migrations
 {
     [DbContext(typeof(CareerConnectDbContext))]
-    [Migration("20260817182452_AddJobs")]
-    partial class AddJobs
+    [Migration("20260818055745_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -168,6 +168,9 @@ namespace CareerConnect.Infrastructure.Migrations
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RecruiterId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Salary")
                         .HasPrecision(18, 2)

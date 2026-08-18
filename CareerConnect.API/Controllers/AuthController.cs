@@ -1,5 +1,5 @@
-﻿using CareerConnect.Application.DTOs.Authentication;
-using CareerConnect.Application.Interfaces;
+﻿using CareerConnect.Application.Features.Authentication.DTOs;
+using CareerConnect.Application.Features.Authentication.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

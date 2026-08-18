@@ -1,6 +1,6 @@
 ﻿using CareerConnect.Domain.Enums;
 
-namespace CareerConnect.Application.DTOs.Authentication;
+namespace CareerConnect.Application.Features.Authentication.DTOs;
 
 public class RegisterRequestDto
 {

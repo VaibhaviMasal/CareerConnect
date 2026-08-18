@@ -1,6 +1,6 @@
 ﻿using CareerConnect.Domain.Entities;
 
-namespace CareerConnect.Application.Interfaces;
+namespace CareerConnect.Application.Features.Authentication.Interfaces;
 
 public interface IRefreshTokenRepository
 {

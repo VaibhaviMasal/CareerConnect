@@ -1,27 +1,43 @@
-using CareerConnect.Application.Interfaces;
-using CareerConnect.Application.Services;
 using CareerConnect.Infrastructure.Persistence;
+using CareerConnect.Application.Features.Authentication.Services;
+using CareerConnect.Application.Features.Authentication.Interfaces;
+using CareerConnect.Application.Features.Users.Interfaces;
+using CareerConnect.Application.Features.Jobs.Interfaces;
 using CareerConnect.Infrastructure.Repositories;
+using CareerConnect.Shared.Middleware;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
+// =====================
+// DB
+// =====================
 builder.Services.AddDbContext<CareerConnectDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+// =====================
 // Repositories
+// =====================
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
 
-// JWT Configuration
+// =====================
+// Services
+// =====================
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+builder.Services.AddScoped<IJobService, JobService>();
+
+// =====================
+// JWT Authentication
+// =====================
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
@@ -47,41 +63,40 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Application Services
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-
-// Controllers & Swagger
-
+// =====================
+// Controllers + Enum Support
+// =====================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
+// =====================
+// Swagger + JWT Support 🔒
+// =====================
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddScoped<IJobRepository, JobRepository>();
-
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Enter JWT token like: Bearer {your token}"
+        In = ParameterLocation.Header,
+        Description = "Enter: Bearer {your token}"
     });
 
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
@@ -90,20 +105,23 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
 var app = builder.Build();
 
-// HTTP request pipeline
+// =====================
+// Middleware (ORDER MATTERS ⚠️)
+// =====================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Global Exception Middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();

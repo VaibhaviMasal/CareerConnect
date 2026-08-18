@@ -1,7 +1,7 @@
-﻿using CareerConnect.Application.DTOs.Authentication;
+﻿using CareerConnect.Application.Features.Authentication.DTOs;
 
 
-namespace CareerConnect.Application.Interfaces;
+namespace CareerConnect.Application.Features.Authentication.Interfaces;
 
 public interface IAuthenticationService
 {

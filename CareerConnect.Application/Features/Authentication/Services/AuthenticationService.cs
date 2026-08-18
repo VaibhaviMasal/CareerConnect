@@ -1,5 +1,6 @@
-﻿using CareerConnect.Application.DTOs.Authentication;
-using CareerConnect.Application.Interfaces;
+﻿using CareerConnect.Application.Features.Authentication.DTOs;
+using CareerConnect.Application.Features.Authentication.Interfaces;
+using CareerConnect.Application.Features.Users.Interfaces;
 using CareerConnect.Domain.Entities;
 
 using Microsoft.Extensions.Configuration;
@@ -8,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace CareerConnect.Application.Services;
+namespace CareerConnect.Application.Features.Authentication.Services;
 
 public class AuthenticationService : IAuthenticationService
 {

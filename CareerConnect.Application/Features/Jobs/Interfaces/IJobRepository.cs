@@ -1,5 +1,7 @@
 ﻿using CareerConnect.Domain.Entities;
 
+namespace CareerConnect.Application.Features.Jobs.Interfaces;
+
 public interface IJobRepository
 {
     Task AddAsync(Job job);

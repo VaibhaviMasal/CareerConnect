@@ -10,4 +10,5 @@
   <Project Path="CareerConnect.Application/CareerConnect.Application.csproj" Id="67c0c16d-76de-45cf-804c-0153cb5482ea" />
   <Project Path="CareerConnect.Domain/CareerConnect.Domain.csproj" Id="4f14e5d3-6d12-44fe-ad5f-26b38aad2193" />
   <Project Path="CareerConnect.Infrastructure/CareerConnect.Infrastructure.csproj" Id="32e2efbd-fc5c-4181-95e1-6196e7f0fae0" />
+  <Project Path="CareerConnect.Shared/CareerConnect.Shared.csproj" Id="528faa18-9e07-487f-812c-d9310175e7a6" />
 </Solution>

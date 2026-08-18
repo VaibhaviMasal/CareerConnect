@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CareerConnect.Application\CareerConnect.Application.csproj" />
     <ProjectReference Include="..\CareerConnect.Infrastructure\CareerConnect.Infrastructure.csproj" />
+    <ProjectReference Include="..\CareerConnect.Shared\CareerConnect.Shared.csproj" />
   </ItemGroup>
 
 </Project>

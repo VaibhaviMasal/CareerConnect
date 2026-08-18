@@ -8,17 +8,43 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CareerConnect.Domain\CareerConnect.Domain.csproj" />
+    <ProjectReference Include="..\CareerConnect.Shared\CareerConnect.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Auth\" />
-    <Folder Include="DTOs\Candidates\" />
-    <Folder Include="DTOs\Applications\" />
-    <Folder Include="DTOs\Interviews\" />
-    <Folder Include="DTOs\Resumes\" />
-    <Folder Include="DTOs\Recruiters\" />
-    <Folder Include="Mappings\" />
-    <Folder Include="Validators\" />
+    <Folder Include="Features\Applications\DTOs\" />
+    <Folder Include="Features\Applications\Interfaces\" />
+    <Folder Include="Features\Applications\Mappings\" />
+    <Folder Include="Features\Applications\Validators\" />
+    <Folder Include="Features\Applications\Services\" />
+    <Folder Include="Features\Authentication\Mappings\" />
+    <Folder Include="Features\Authentication\Validators\" />
+    <Folder Include="Features\Candidates\DTOs\" />
+    <Folder Include="Features\Candidates\Interfaces\" />
+    <Folder Include="Features\Candidates\Mapping\" />
+    <Folder Include="Features\Candidates\Validators\" />
+    <Folder Include="Features\Candidates\Services\" />
+    <Folder Include="Features\Interviews\DTOs\" />
+    <Folder Include="Features\Interviews\Interfaces\" />
+    <Folder Include="Features\Interviews\Mappings\" />
+    <Folder Include="Features\Interviews\Validators\" />
+    <Folder Include="Features\Interviews\Services\" />
+    <Folder Include="Features\Jobs\Mappings\" />
+    <Folder Include="Features\Jobs\Validators\" />
+    <Folder Include="Features\Recruiters\DTOs\" />
+    <Folder Include="Features\Recruiters\Interfaces\" />
+    <Folder Include="Features\Recruiters\Mappings\" />
+    <Folder Include="Features\Recruiters\Validators\" />
+    <Folder Include="Features\Recruiters\Services\" />
+    <Folder Include="Features\Resumes\DTOs\" />
+    <Folder Include="Features\Resumes\Interfaces\" />
+    <Folder Include="Features\Resumes\Mappings\" />
+    <Folder Include="Features\Resumes\Validators\" />
+    <Folder Include="Features\Resumes\Services\" />
+    <Folder Include="Features\Users\DTOs\" />
+    <Folder Include="Features\Users\Mappings\" />
+    <Folder Include="Features\Users\Validators\" />
+    <Folder Include="Features\Users\Services\" />
   </ItemGroup>
 
   <ItemGroup>
