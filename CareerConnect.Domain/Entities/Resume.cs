@@ -28,7 +28,7 @@ public partial class Resume
     public bool IsCurrent { get; set; }
 
     [InverseProperty("Resume")]
-    public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
+    public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
 
     [ForeignKey("CandidateId")]
     [InverseProperty("Resumes")]

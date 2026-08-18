@@ -1,11 +1,12 @@
-using CareerConnect.Infrastructure.Persistence;
-using CareerConnect.Application.Features.Authentication.Services;
+using CareerConnect.Application.Features.Applications.Interfaces;
+using CareerConnect.Application.Features.Applications.Services;
 using CareerConnect.Application.Features.Authentication.Interfaces;
-using CareerConnect.Application.Features.Users.Interfaces;
+using CareerConnect.Application.Features.Authentication.Services;
 using CareerConnect.Application.Features.Jobs.Interfaces;
+using CareerConnect.Application.Features.Users.Interfaces;
+using CareerConnect.Infrastructure.Persistence;
 using CareerConnect.Infrastructure.Repositories;
 using CareerConnect.Shared.Middleware;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -34,6 +35,13 @@ builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddScoped<IJobService, JobService>();
+
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
+
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
+
 
 // =====================
 // JWT Authentication

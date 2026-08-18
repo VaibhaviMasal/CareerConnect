@@ -6,35 +6,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CareerConnect.Domain.Entities;
 
-
-public partial class Application
+public partial class JobApplication
 {
-    [Key]
     public int Id { get; set; }
 
     public int CandidateId { get; set; }
-
     public int JobPostingId { get; set; }
-
     public int ResumeId { get; set; }
 
     public int Status { get; set; }
 
-    [Column(TypeName = "datetime")]
     public DateTime AppliedAt { get; set; }
 
-    [ForeignKey("CandidateId")]
-    [InverseProperty("Applications")]
+    // Navigation properties
     public virtual CandidateProfile Candidate { get; set; } = null!;
-
-    [InverseProperty("Application")]
-    public virtual ICollection<InterviewSchedule> InterviewSchedules { get; set; } = new List<InterviewSchedule>();
-
-    [ForeignKey("JobPostingId")]
-    [InverseProperty("Applications")]
     public virtual JobPosting JobPosting { get; set; } = null!;
-
-    [ForeignKey("ResumeId")]
-    [InverseProperty("Applications")]
     public virtual Resume Resume { get; set; } = null!;
+
+    public virtual ICollection<InterviewSchedule> InterviewSchedules { get; set; } = new List<InterviewSchedule>();
 }

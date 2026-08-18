@@ -35,7 +35,7 @@ public partial class JobPosting
     public bool IsActive { get; set; }
 
     [InverseProperty("JobPosting")]
-    public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
+    public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
 
     [ForeignKey("RecruiterId")]
     [InverseProperty("JobPostings")]

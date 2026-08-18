@@ -23,7 +23,7 @@ public partial class CandidateProfile
     public int ExperienceYears { get; set; }
 
     [InverseProperty("Candidate")]
-    public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
+    public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
 
     [InverseProperty("Candidate")]
     public virtual ICollection<Resume> Resumes { get; set; } = new List<Resume>();
