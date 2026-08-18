@@ -8,5 +8,8 @@ public interface IApplicationRepository
 
     Task<List<JobApplication>> GetByCandidateIdAsync(int candidateId);
 
-
+    Task<List<JobApplication>> GetByJobIdAsync(int jobId);
+    Task<JobApplication?> GetByIdAsync(int id);
+    Task UpdateAsync(JobApplication application);
+    Task DeleteAsync(JobApplication application);
 }

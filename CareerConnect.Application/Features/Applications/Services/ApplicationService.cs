@@ -42,6 +42,43 @@ public class ApplicationService : IApplicationService
         }).ToList();
     }
 
+    public async Task<List<ApplicationResponseDto>> GetApplicationsByJobAsync(int jobId)
+    {
+        var applications = await _applicationRepository.GetByJobIdAsync(jobId);
+
+        return applications.Select(a => new ApplicationResponseDto
+        {
+            Id = a.Id,
+            JobId = a.JobPostingId,
+            JobTitle = a.JobPosting?.Title,
+            CompanyName = a.JobPosting?.Recruiter?.CompanyName,
+            AppliedAt = a.AppliedAt,
+            Status = a.Status
+        }).ToList();
+    }
+
+    public async Task UpdateStatusAsync(int id, int status)
+    {
+        var application = await _applicationRepository.GetByIdAsync(id);
+
+        if (application == null)
+            throw new Exception("Application not found");
+
+        application.Status = status;
+
+        await _applicationRepository.UpdateAsync(application);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var application = await _applicationRepository.GetByIdAsync(id);
+
+        if (application == null)
+            throw new Exception("Application not found");
+
+        await _applicationRepository.DeleteAsync(application);
+    }
+
 
 
 }
