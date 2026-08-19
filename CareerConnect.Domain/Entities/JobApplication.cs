@@ -20,7 +20,7 @@ public partial class JobApplication
     public DateTime AppliedAt { get; set; }
 
     // Navigation properties
-    public virtual CandidateProfile Candidate { get; set; } = null!;
+    public virtual CandidateProfile Candidate { get; set; } 
     public virtual JobPosting JobPosting { get; set; } = null!;
     public virtual Resume Resume { get; set; } = null!;
 

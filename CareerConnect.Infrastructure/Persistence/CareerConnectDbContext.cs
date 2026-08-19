@@ -50,17 +50,29 @@ public partial class CareerConnectDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
+            // 🔗 User (1-1)
             entity.HasOne(e => e.User)
                   .WithOne(u => u.CandidateProfile)
                   .HasForeignKey<CandidateProfile>(e => e.UserId);
 
-            entity.HasMany(e => e.Applications)
-                  .WithOne(a => a.Candidate)
-                  .HasForeignKey(a => a.CandidateId);
+            // 🔗 Skills (Many-to-Many)
+            entity.HasKey(e => e.Id);
 
+            entity.HasOne(e => e.User)
+                  .WithOne(u => u.CandidateProfile)
+                  .HasForeignKey<CandidateProfile>(e => e.UserId);
+
+            // 🔗 Resumes (1-to-Many)
             entity.HasMany(e => e.Resumes)
                   .WithOne(r => r.Candidate)
-                  .HasForeignKey(r => r.CandidateId);
+                  .HasForeignKey(r => r.CandidateId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // 🔗 Applications (1-to-Many)
+            entity.HasMany(e => e.Applications)
+                  .WithOne(a => a.Candidate)
+                  .HasForeignKey(a => a.CandidateId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // =========================
