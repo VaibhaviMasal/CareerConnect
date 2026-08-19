@@ -1,38 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-
-namespace CareerConnect.Domain.Entities;
-
-
-public partial class CandidateProfile
+﻿namespace CareerConnect.Domain.Entities
 {
-    [Key]
-    public int Id { get; set; }
+    public class CandidateProfile
+    {
+        public int Id { get; set; }
 
-    public int UserId { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
 
-    [StringLength(15)]
-    public string? PhoneNumber { get; set; }
+        public string Skills { get; set; } = string.Empty;
+        public int Experience { get; set; }
 
-    [StringLength(100)]
-    public string? Location { get; set; }
+        public ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
 
-    public int ExperienceYears { get; set; }
+        // ✅ ADD THESE (your service needs them)
+        public string Education { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
 
-    [InverseProperty("Candidate")]
-    public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
-
-    [InverseProperty("Candidate")]
-    public virtual ICollection<Resume> Resumes { get; set; } = new List<Resume>();
-
-    [ForeignKey("UserId")]
-    [InverseProperty("CandidateProfile")]
-    public virtual User User { get; set; } = null!;
-
-    [ForeignKey("CandidateProfileId")]
-    [InverseProperty("CandidateProfiles")]
-    public virtual ICollection<Skill> Skills { get; set; } = new List<Skill>();
+        public ICollection<Resume> Resumes { get; set; } = new List<Resume>();
+    }
 }

@@ -2,6 +2,9 @@ using CareerConnect.Application.Features.Applications.Interfaces;
 using CareerConnect.Application.Features.Applications.Services;
 using CareerConnect.Application.Features.Authentication.Interfaces;
 using CareerConnect.Application.Features.Authentication.Services;
+
+using CareerConnect.Application.Features.Candidates.Interfaces;
+using CareerConnect.Application.Features.Candidates.Services;
 using CareerConnect.Application.Features.Interviews.Interfaces;
 using CareerConnect.Application.Features.Interviews.Services;
 using CareerConnect.Application.Features.Jobs.Interfaces;
@@ -49,6 +52,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
 
 builder.Services.AddScoped<IInterviewService, InterviewService>();
+
+builder.Services.AddScoped<ICandidateService, CandidateService>();
+
+builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 
 // =====================
 // JWT Authentication

@@ -10,9 +10,7 @@ public partial class CareerConnectDbContext : DbContext
     {
     }
 
-    // 🔥 IMPORTANT: keep naming consistent
     public DbSet<JobApplication> JobApplications { get; set; }
-
     public DbSet<CandidateProfile> CandidateProfiles { get; set; }
     public DbSet<InterviewSchedule> InterviewSchedules { get; set; }
     public DbSet<JobPosting> JobPostings { get; set; }
@@ -21,9 +19,6 @@ public partial class CareerConnectDbContext : DbContext
     public DbSet<Resume> Resumes { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<User> Users { get; set; }
-
-    // ❌ REMOVE this if not needed (confusing duplicate)
-    // public DbSet<Job> Jobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,11 +31,6 @@ public partial class CareerConnectDbContext : DbContext
 
             entity.Property(e => e.AppliedAt)
                   .HasDefaultValueSql("GETDATE()");
-
-            entity.HasOne(e => e.Candidate)
-                  .WithMany(c => c.Applications)
-                  .HasForeignKey(e => e.CandidateId)
-                  .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.JobPosting)
                   .WithMany(j => j.Applications)
@@ -64,9 +54,13 @@ public partial class CareerConnectDbContext : DbContext
                   .WithOne(u => u.CandidateProfile)
                   .HasForeignKey<CandidateProfile>(e => e.UserId);
 
-            entity.HasMany(e => e.Skills)
-                  .WithMany(s => s.CandidateProfiles)
-                  .UsingEntity(j => j.ToTable("CandidateSkills"));
+            entity.HasMany(e => e.Applications)
+                  .WithOne(a => a.Candidate)
+                  .HasForeignKey(a => a.CandidateId);
+
+            entity.HasMany(e => e.Resumes)
+                  .WithOne(r => r.Candidate)
+                  .HasForeignKey(r => r.CandidateId);
         });
 
         // =========================
