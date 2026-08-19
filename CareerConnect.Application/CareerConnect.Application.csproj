@@ -20,11 +20,8 @@
     <Folder Include="Features\Interviews\Validators\" />
     <Folder Include="Features\Jobs\Mappings\" />
     <Folder Include="Features\Jobs\Validators\" />
-    <Folder Include="Features\Recruiters\DTOs\" />
-    <Folder Include="Features\Recruiters\Interfaces\" />
     <Folder Include="Features\Recruiters\Mappings\" />
     <Folder Include="Features\Recruiters\Validators\" />
-    <Folder Include="Features\Recruiters\Services\" />
     <Folder Include="Features\Resumes\DTOs\" />
     <Folder Include="Features\Resumes\Interfaces\" />
     <Folder Include="Features\Resumes\Mappings\" />
