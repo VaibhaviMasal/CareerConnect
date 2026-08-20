@@ -8,7 +8,7 @@ using CareerConnect.Application.Features.Interviews.Interfaces;
 using CareerConnect.Application.Features.Interviews.Services;
 using CareerConnect.Application.Features.Jobs.Interfaces;
 using CareerConnect.Application.Features.Jobs.Services;
-using CareerConnect.Application.Features.Recruiter.Services;
+
 using CareerConnect.Application.Features.Recruiters.Interfaces;
 using CareerConnect.Application.Features.Resumes.Interfaces;
 using CareerConnect.Application.Features.Resumes.Services;

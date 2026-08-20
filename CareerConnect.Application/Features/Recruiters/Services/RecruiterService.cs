@@ -1,9 +1,6 @@
-﻿
-using CareerConnect.Application.Features.Recruiters.DTOs;
+﻿using CareerConnect.Application.Features.Recruiters.DTOs;
 using CareerConnect.Application.Features.Recruiters.Interfaces;
 using CareerConnect.Domain.Entities;
-
-namespace CareerConnect.Application.Features.Recruiter.Services;
 
 public class RecruiterService : IRecruiterService
 {
@@ -14,36 +11,73 @@ public class RecruiterService : IRecruiterService
         _repository = repository;
     }
 
-    public async Task CreateAsync(CreateRecruiterDto dto, int userId)
+    public async Task CreateAsync(CreateRecruiterDto request, int userId)
     {
-        var existing = await _repository.GetByUserIdAsync(userId);
-
-        if (existing != null)
-            throw new Exception("Recruiter profile already exists");
-
-        var profile = new RecruiterProfile
+        var recruiter = new RecruiterProfile
         {
             UserId = userId,
-            CompanyName = dto.CompanyName,
-            CompanyWebsite = dto.CompanyWebsite
+            CompanyName = request.CompanyName,
+            Position = request.Position,
+            City = request.City
         };
 
-        await _repository.AddAsync(profile);
+        await _repository.AddAsync(recruiter);
     }
 
-    public async Task<RecruiterResponseDto> GetMyProfileAsync(int userId)
+    public async Task<RecruiterResponseDto> GetByIdAsync(int id)
     {
-        var profile = await _repository.GetByUserIdAsync(userId);
+        var recruiter = await _repository.GetByIdAsync(id);
 
-        if (profile == null)
-            throw new Exception("Profile not found");
+        if (recruiter == null)
+            throw new Exception("Recruiter not found");
 
         return new RecruiterResponseDto
         {
-            Id = profile.Id,
-            UserId = profile.UserId,
-            CompanyName = profile.CompanyName,
-            CompanyWebsite = profile.CompanyWebsite
+            Id = recruiter.Id,
+            UserId = recruiter.UserId,
+            CompanyName = recruiter.CompanyName,
+            Position = recruiter.Position,
+            City = recruiter.City
+        };
+    }
+
+    public async Task UpdateAsync(int userId, UpdateRecruiterDto request)
+    {
+        var recruiter = await _repository.GetByUserIdAsync(userId);
+
+        if (recruiter == null)
+            throw new Exception("Recruiter profile not found");
+
+        recruiter.CompanyName = request.CompanyName;
+        recruiter.Position = request.Position;
+        recruiter.City = request.City;
+
+        await _repository.UpdateAsync(recruiter);
+    }
+
+    public async Task DeleteAsync(int userId)
+    {
+        var recruiter = await _repository.GetByUserIdAsync(userId);
+
+        if (recruiter == null)
+            throw new Exception("Recruiter profile not found");
+
+        await _repository.DeleteAsync(recruiter);
+    }
+
+    public async Task<RecruiterResponseDto> GetByUserIdAsync(int userId)
+    {
+        var recruiter = await _repository.GetByUserIdAsync(userId);
+
+        if (recruiter == null)
+            throw new Exception("Recruiter not found");
+
+        return new RecruiterResponseDto
+        {
+            Id = recruiter.Id,
+            CompanyName = recruiter.CompanyName,
+            Position = recruiter.Position,
+            City = recruiter.City
         };
     }
 }

@@ -23,24 +23,17 @@ public partial class CareerConnectDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // =========================
-        // JOB APPLICATION
+        // USER
         // =========================
-        modelBuilder.Entity<JobApplication>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.AppliedAt)
+            entity.Property(e => e.CreatedAt)
                   .HasDefaultValueSql("GETDATE()");
 
-            entity.HasOne(e => e.JobPosting)
-                  .WithMany(j => j.Applications)
-                  .HasForeignKey(e => e.JobPostingId)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.Resume)
-                  .WithMany(r => r.Applications)
-                  .HasForeignKey(e => e.ResumeId)
-                  .OnDelete(DeleteBehavior.Restrict);
+            entity.Property(e => e.IsActive)
+                  .HasDefaultValue(true);
         });
 
         // =========================
@@ -50,25 +43,15 @@ public partial class CareerConnectDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            // 🔗 User (1-1)
             entity.HasOne(e => e.User)
                   .WithOne(u => u.CandidateProfile)
                   .HasForeignKey<CandidateProfile>(e => e.UserId);
 
-            // 🔗 Skills (Many-to-Many)
-            entity.HasKey(e => e.Id);
-
-            entity.HasOne(e => e.User)
-                  .WithOne(u => u.CandidateProfile)
-                  .HasForeignKey<CandidateProfile>(e => e.UserId);
-
-            // 🔗 Resumes (1-to-Many)
             entity.HasMany(e => e.Resumes)
                   .WithOne(r => r.Candidate)
                   .HasForeignKey(r => r.CandidateId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            // 🔗 Applications (1-to-Many)
             entity.HasMany(e => e.Applications)
                   .WithOne(a => a.Candidate)
                   .HasForeignKey(a => a.CandidateId)
@@ -76,19 +59,15 @@ public partial class CareerConnectDbContext : DbContext
         });
 
         // =========================
-        // INTERVIEW SCHEDULE
+        // RECRUITER PROFILE
         // =========================
-        modelBuilder.Entity<InterviewSchedule>(entity =>
+        modelBuilder.Entity<RecruiterProfile>(entity =>
         {
             entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.CreatedAt)
-                  .HasDefaultValueSql("GETDATE()");
-
-            entity.HasOne(e => e.Application)
-                  .WithMany(a => a.InterviewSchedules)
-                  .HasForeignKey(e => e.ApplicationId)
-                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.User)
+                  .WithOne(u => u.RecruiterProfile)
+                  .HasForeignKey<RecruiterProfile>(e => e.UserId);
         });
 
         // =========================
@@ -105,40 +84,35 @@ public partial class CareerConnectDbContext : DbContext
                   .HasDefaultValue(true);
 
             entity.HasOne(e => e.Recruiter)
-                  .WithMany(r => r.JobPostings)
+                  .WithMany(r => r.JobPostings) // ⚠️ requires navigation
                   .HasForeignKey(e => e.RecruiterId)
                   .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasMany(e => e.Skills)
-                  .WithMany(s => s.JobPostings)
-                  .UsingEntity(j => j.ToTable("JobPostingSkills"));
         });
 
         // =========================
-        // RECRUITER PROFILE
+        // JOB APPLICATION
         // =========================
-        modelBuilder.Entity<RecruiterProfile>(entity =>
+        modelBuilder.Entity<JobApplication>(entity =>
         {
             entity.HasKey(e => e.Id);
 
-            entity.HasOne(e => e.User)
-                  .WithOne(u => u.RecruiterProfile)
-                  .HasForeignKey<RecruiterProfile>(e => e.UserId);
-        });
-
-        // =========================
-        // REFRESH TOKEN
-        // =========================
-        modelBuilder.Entity<RefreshToken>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.AppliedAt)
                   .HasDefaultValueSql("GETDATE()");
 
-            entity.HasOne(e => e.User)
-                  .WithMany(u => u.RefreshTokens)
-                  .HasForeignKey(e => e.UserId);
+            entity.HasOne(e => e.JobPosting)
+                  .WithMany(j => j.Applications)
+                  .HasForeignKey(e => e.JobPostingId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Candidate)
+                  .WithMany(c => c.Applications)
+                  .HasForeignKey(e => e.CandidateId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Resume)
+                  .WithMany(r => r.Applications)
+                  .HasForeignKey(e => e.ResumeId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // =========================
@@ -161,25 +135,42 @@ public partial class CareerConnectDbContext : DbContext
         });
 
         // =========================
-        // SKILL
+        // INTERVIEW
         // =========================
-        modelBuilder.Entity<Skill>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-        });
-
-        // =========================
-        // USER
-        // =========================
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<InterviewSchedule>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.CreatedAt)
                   .HasDefaultValueSql("GETDATE()");
 
-            entity.Property(e => e.IsActive)
-                  .HasDefaultValue(true);
+            entity.HasOne(e => e.Application)
+                  .WithMany(a => a.InterviewSchedules)
+                  .HasForeignKey(e => e.ApplicationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // =========================
+        // REFRESH TOKEN
+        // =========================
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.CreatedAt)
+                  .HasDefaultValueSql("GETDATE()");
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.RefreshTokens)
+                  .HasForeignKey(e => e.UserId);
+        });
+
+        // =========================
+        // SKILL
+        // =========================
+        modelBuilder.Entity<Skill>(entity =>
+        {
+            entity.HasKey(e => e.Id);
         });
     }
 }

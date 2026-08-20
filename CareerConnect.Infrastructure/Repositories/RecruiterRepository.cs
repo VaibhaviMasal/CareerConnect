@@ -1,10 +1,7 @@
-﻿
-using CareerConnect.Application.Features.Recruiters.Interfaces;
+﻿using CareerConnect.Application.Features.Recruiters.Interfaces;
 using CareerConnect.Domain.Entities;
 using CareerConnect.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-
-namespace CareerConnect.Infrastructure.Repositories;
 
 public class RecruiterRepository : IRecruiterRepository
 {
@@ -15,15 +12,32 @@ public class RecruiterRepository : IRecruiterRepository
         _context = context;
     }
 
+    public async Task AddAsync(RecruiterProfile recruiter)
+    {
+        await _context.RecruiterProfiles.AddAsync(recruiter);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<RecruiterProfile?> GetByUserIdAsync(int userId)
     {
         return await _context.RecruiterProfiles
-            .FirstOrDefaultAsync(x => x.UserId == userId);
+            .FirstOrDefaultAsync(r => r.UserId == userId);
     }
 
-    public async Task AddAsync(RecruiterProfile profile)
+    public async Task<RecruiterProfile?> GetByIdAsync(int id)
     {
-        await _context.RecruiterProfiles.AddAsync(profile);
+        return await _context.RecruiterProfiles.FindAsync(id);
+    }
+
+    public async Task UpdateAsync(RecruiterProfile recruiter)
+    {
+        _context.RecruiterProfiles.Update(recruiter);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(RecruiterProfile recruiter)
+    {
+        _context.RecruiterProfiles.Remove(recruiter);
         await _context.SaveChangesAsync();
     }
 }

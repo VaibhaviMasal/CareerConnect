@@ -34,6 +34,8 @@ public partial class JobPosting
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+
+
     public bool IsActive { get; set; }
 
     [InverseProperty("JobPosting")]

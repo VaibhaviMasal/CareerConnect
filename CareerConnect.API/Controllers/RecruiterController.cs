@@ -1,5 +1,4 @@
-﻿
-using CareerConnect.Application.Features.Recruiters.DTOs;
+﻿using CareerConnect.Application.Features.Recruiters.DTOs;
 using CareerConnect.Application.Features.Recruiters.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,33 +8,79 @@ namespace CareerConnect.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Recruiter")]
 public class RecruitersController : ControllerBase
 {
-    private readonly IRecruiterService _service;
+    private readonly IRecruiterService _recruiterService;
 
-    public RecruitersController(IRecruiterService service)
+    public RecruitersController(IRecruiterService recruiterService)
     {
-        _service = service;
+        _recruiterService = recruiterService;
     }
 
+    // =========================
+    // CREATE RECRUITER PROFILE
+    // =========================
     [HttpPost]
-    public async Task<IActionResult> Create(CreateRecruiterDto dto)
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> Create(CreateRecruiterDto request)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        await _service.CreateAsync(dto, userId);
+        await _recruiterService.CreateAsync(request, userId);
 
-        return Ok("Recruiter profile created");
+        return Ok("Recruiter profile created successfully");
     }
 
+    // =========================
+    // GET MY PROFILE
+    // =========================
     [HttpGet("me")]
+    [Authorize(Roles = "Recruiter")]
     public async Task<IActionResult> GetMyProfile()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var data = await _service.GetMyProfileAsync(userId);
+        var result = await _recruiterService.GetByUserIdAsync(userId);
 
-        return Ok(data);
+        return Ok(result);
+    }
+
+    // =========================
+    // GET BY ID
+    // =========================
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var result = await _recruiterService.GetByIdAsync(id);
+
+        return Ok(result);
+    }
+
+    // =========================
+    // UPDATE
+    // =========================
+    [HttpPut]
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> Update(UpdateRecruiterDto request)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        await _recruiterService.UpdateAsync(userId, request);
+
+        return Ok("Recruiter updated successfully");
+    }
+
+    // =========================
+    // DELETE
+    // =========================
+    [HttpDelete]
+    [Authorize(Roles = "Recruiter")]
+    public async Task<IActionResult> Delete()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        await _recruiterService.DeleteAsync(userId);
+
+        return Ok("Recruiter deleted successfully");
     }
 }
