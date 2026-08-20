@@ -10,13 +10,15 @@ public class ApplicationService : IApplicationService
 {
     private readonly IApplicationRepository _applicationRepository;
     private readonly IResumeRepository _resumeRepository;
-
     private readonly ICandidateRepository _candidateRepository;
+
     public ApplicationService(
-    IApplicationRepository applicationRepository,
-    ICandidateRepository candidateRepository)
+        IApplicationRepository applicationRepository,
+        IResumeRepository resumeRepository,
+        ICandidateRepository candidateRepository)
     {
         _applicationRepository = applicationRepository;
+        _resumeRepository = resumeRepository;
         _candidateRepository = candidateRepository;
     }
 
@@ -60,7 +62,9 @@ public class ApplicationService : IApplicationService
         {
             Id = a.Id,
             JobId = a.JobPostingId,
-            Status = a.Status
+            CandidateId = a.CandidateId,   // 🔥 FIX
+            Status = a.Status,
+            AppliedAt = a.AppliedAt       // 🔥 FIX
         }).ToList();
     }
 
