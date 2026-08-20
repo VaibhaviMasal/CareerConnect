@@ -16,7 +16,7 @@ using CareerConnect.Application.Features.Users.Interfaces;
 using CareerConnect.Infrastructure.Persistence;
 using CareerConnect.Infrastructure.Repositories;
 using CareerConnect.Shared.Middleware;
-
+using CareerConnect.Application.Features.Users.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

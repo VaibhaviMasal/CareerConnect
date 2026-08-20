@@ -13,6 +13,8 @@ public class InterviewSchedule
 
     public string? MeetingLink { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     public string Status { get; set; } = "Scheduled";
     // Scheduled / Completed / Cancelled
 

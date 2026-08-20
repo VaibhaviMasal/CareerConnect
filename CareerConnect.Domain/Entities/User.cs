@@ -1,39 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using CareerConnect.Domain.Enums;
 
 namespace CareerConnect.Domain.Entities;
 
-
-public partial class User
+public class User
 {
-    [Key]
     public int Id { get; set; }
 
-    [StringLength(100)]
-    public string FullName { get; set; } = null!;
+    public string? Email { get; set; }
+    public string? PasswordHash { get; set; }
 
-    [StringLength(100)]
-    public string Email { get; set; } = null!;
+    public string? FullName { get; set; }
 
-    [StringLength(255)]
-    public string PasswordHash { get; set; } = null!;
+    public string? Role { get; set; }  // "Candidate" or "Recruiter"
 
-    public UserRole Role { get; set; }
+    public bool IsActive { get; set; } = true;
 
-    [Column(TypeName = "datetime")]
     public DateTime CreatedAt { get; set; }
 
-    public bool IsActive { get; set; }
+    // =========================
+    // NAVIGATION PROPERTIES
+    // =========================
 
-    [InverseProperty("User")]
-    public virtual CandidateProfile? CandidateProfile { get; set; }
+    // One-to-One
+    public CandidateProfile? CandidateProfile { get; set; }
+    public RecruiterProfile? RecruiterProfile { get; set; }
 
-    [InverseProperty("User")]
-    public virtual RecruiterProfile? RecruiterProfile { get; set; }
-
-    [InverseProperty("User")]
-    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    // One-to-Many
+    public List<RefreshToken> RefreshTokens { get; set; } = new();
 }

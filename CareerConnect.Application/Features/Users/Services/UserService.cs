@@ -1,19 +1,21 @@
 ﻿using CareerConnect.Application.Features.Users.DTOs;
 using CareerConnect.Application.Features.Users.Interfaces;
 
+namespace CareerConnect.Application.Features.Users.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _repository;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository repository)
     {
-        _userRepository = userRepository;
+        _repository = repository;
     }
 
+    // ✅ GET BY ID
     public async Task<UserResponseDto> GetByIdAsync(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _repository.GetByIdAsync(id);
 
         if (user == null)
             throw new Exception("User not found");
@@ -27,16 +29,30 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<List<UserResponseDto>> GetAllAsync()
+    // ✅ UPDATE
+    public async Task UpdateAsync(int id, UpdateUserDto request)
     {
-        var users = await _userRepository.GetAllAsync();
+        var user = await _repository.GetByIdAsync(id);
 
-        return users.Select(u => new UserResponseDto
-        {
-            Id = u.Id,
-            FullName = u.FullName,
-            Email = u.Email,
-            Role = u.Role.ToString()
-        }).ToList();
+        if (user == null)
+            throw new Exception("User not found");
+
+        user.FullName = request.FullName;
+        user.Email = request.Email;
+
+        await _repository.UpdateAsync(user);
+    }
+
+    // ✅ DELETE (SOFT DELETE)
+    public async Task DeleteAsync(int id)
+    {
+        var user = await _repository.GetByIdAsync(id);
+
+        if (user == null)
+            throw new Exception("User not found");
+
+        user.IsActive = false;
+
+        await _repository.UpdateAsync(user);
     }
 }

@@ -144,6 +144,10 @@ public partial class CareerConnectDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                   .HasDefaultValueSql("GETDATE()");
 
+
+            entity.Property(e => e.IsActive)
+                  .HasDefaultValue(true);
+
             entity.HasOne(e => e.Application)
                   .WithMany(a => a.InterviewSchedules)
                   .HasForeignKey(e => e.ApplicationId)

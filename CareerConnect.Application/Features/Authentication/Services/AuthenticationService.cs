@@ -42,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = request.Role,
+            Role = request.Role.ToString(),
             CreatedAt = DateTime.UtcNow,
             IsActive = true
         };
@@ -52,7 +52,7 @@ public class AuthenticationService : IAuthenticationService
         return await GenerateTokensAsync(user);
     }
 
-    // ================= LOGIN =================
+    // ================= LOGIN =================S
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
         var user = await _userRepository.GetByEmailAsync(request.Email);
@@ -82,7 +82,7 @@ public class AuthenticationService : IAuthenticationService
         var refreshTokenExpiryDays = int.Parse(jwtSettings["RefreshTokenExpiryDays"] ?? "7");
 
         // 🔥 FIXED ROLE MAPPING HERE
-        string roleName = user.Role.ToString();
+        string Role = user.Role.ToString();
 
         var claims = new[]
         {
