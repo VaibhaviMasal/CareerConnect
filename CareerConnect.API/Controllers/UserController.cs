@@ -39,4 +39,11 @@ public class UsersController : ControllerBase
         await _service.DeleteAsync(id);
         return Ok("User deleted");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await _service.GetAllAsync();
+        return Ok(users);
+    }
 }

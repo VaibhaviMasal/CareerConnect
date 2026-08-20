@@ -55,4 +55,17 @@ public class UserService : IUserService
 
         await _repository.UpdateAsync(user);
     }
+
+    public async Task<List<UserResponseDto>> GetAllAsync()
+    {
+        var users = await _repository.GetAllAsync();
+
+        return users.Select(u => new UserResponseDto
+        {
+            Id = u.Id,
+            FullName = u.FullName,
+            Email = u.Email,
+            Role = u.Role.ToString()
+        }).ToList();
+    }
 }
