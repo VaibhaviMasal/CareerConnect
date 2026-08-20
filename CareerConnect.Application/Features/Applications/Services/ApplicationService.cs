@@ -1,5 +1,7 @@
 ﻿using CareerConnect.Application.Features.Applications.DTOs;
 using CareerConnect.Application.Features.Applications.Interfaces;
+using CareerConnect.Application.Features.Candidates.Interfaces;
+using CareerConnect.Application.Features.Resumes.Interfaces;
 using CareerConnect.Domain.Entities;
 
 namespace CareerConnect.Application.Features.Applications.Services;
@@ -7,18 +9,36 @@ namespace CareerConnect.Application.Features.Applications.Services;
 public class ApplicationService : IApplicationService
 {
     private readonly IApplicationRepository _applicationRepository;
+    private readonly IResumeRepository _resumeRepository;
 
-    public ApplicationService(IApplicationRepository applicationRepository)
+    private readonly ICandidateRepository _candidateRepository;
+    public ApplicationService(
+    IApplicationRepository applicationRepository,
+    ICandidateRepository candidateRepository)
     {
         _applicationRepository = applicationRepository;
+        _candidateRepository = candidateRepository;
     }
 
     public async Task ApplyAsync(CreateApplicationDto request, int userId)
     {
+        var candidate = await _candidateRepository.GetByUserIdAsync(userId);
+
+        if (candidate == null)
+            throw new Exception("Candidate profile not found");
+
+        var resumes = await _resumeRepository.GetByCandidateIdAsync(candidate.Id);
+
+        var resume = resumes.FirstOrDefault(r => r.IsCurrent);
+
+        if (resume == null)
+            throw new Exception("Please upload resume before applying");
+
         var application = new JobApplication
         {
             JobPostingId = request.JobId,
-            CandidateId = userId,
+            CandidateId = candidate.Id,   // ✅ FIX HERE
+            ResumeId = resume.Id,
             AppliedAt = DateTime.UtcNow,
             Status = "Applied"
         };
@@ -28,13 +48,19 @@ public class ApplicationService : IApplicationService
 
     public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int userId)
     {
-        var applications = await _applicationRepository.GetByCandidateIdAsync(userId);
+        var candidate = await _candidateRepository.GetByUserIdAsync(userId);
+
+        if (candidate == null)
+            throw new Exception("Candidate profile not found");
+
+        var applications = await _applicationRepository
+            .GetByCandidateIdAsync(candidate.Id);
 
         return applications.Select(a => new ApplicationResponseDto
         {
             Id = a.Id,
-            JobId = a.JobPostingId,   // int → int ✅
-            Status = a.Status         // string → string ✅
+            JobId = a.JobPostingId,
+            Status = a.Status
         }).ToList();
     }
 

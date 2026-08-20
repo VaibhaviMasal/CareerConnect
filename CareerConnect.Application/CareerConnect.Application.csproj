@@ -12,23 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Applications\Mappings\" />
-    <Folder Include="Features\Applications\Validators\" />
-    <Folder Include="Features\Authentication\Mappings\" />
-    <Folder Include="Features\Authentication\Validators\" />
     <Folder Include="Features\Interviews\Mappings\" />
     <Folder Include="Features\Interviews\Validators\" />
     <Folder Include="Features\Jobs\Mappings\" />
     <Folder Include="Features\Jobs\Validators\" />
     <Folder Include="Features\Recruiters\Mappings\" />
     <Folder Include="Features\Recruiters\Validators\" />
-    <Folder Include="Features\Resumes\DTOs\" />
-    <Folder Include="Features\Resumes\Interfaces\" />
-    <Folder Include="Features\Resumes\Mappings\" />
     <Folder Include="Features\Resumes\Validators\" />
-    <Folder Include="Features\Resumes\Services\" />
-    <Folder Include="Features\Users\Mappings\" />
-    <Folder Include="Features\Users\Validators\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,7 +8,6 @@ namespace CareerConnect.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
@@ -18,8 +17,9 @@ public class AuthController : ControllerBase
         _authenticationService = authenticationService;
     }
 
-    [Authorize(Roles = "Candidate")]
+   
     [HttpPost("register")]
+    
     public async Task<IActionResult> Register(
         [FromBody] RegisterRequestDto request)
     {
@@ -40,6 +40,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+  
     public async Task<IActionResult> Login(
         [FromBody] LoginRequestDto request)
     {
@@ -65,7 +66,8 @@ public class AuthController : ControllerBase
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        var role = User.Claims
+    .FirstOrDefault(c => c.Type.Contains("role"))?.Value;
 
         return Ok(new
         {
@@ -73,5 +75,12 @@ public class AuthController : ControllerBase
             email,
             role
         });
+    }
+
+    [HttpGet("debug")]
+    public IActionResult Debug()
+    {
+        var claims = User.Claims.Select(c => new { c.Type, c.Value });
+        return Ok(claims);
     }
 }

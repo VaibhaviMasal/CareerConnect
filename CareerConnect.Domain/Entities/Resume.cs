@@ -1,36 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-
+﻿
 namespace CareerConnect.Domain.Entities;
 
-
-public partial class Resume
+public class Resume
 {
-    [Key]
     public int Id { get; set; }
 
     public int CandidateId { get; set; }
+    public CandidateProfile Candidate { get; set; } = null!;
 
-    [StringLength(200)]
-    public string FileName { get; set; } = null!;
+    public string FileUrl { get; set; } = string.Empty;
 
-    [StringLength(500)]
-    public string FilePath { get; set; } = null!;
+    public bool IsCurrent { get; set; } = true;
 
-    public int VersionNumber { get; set; }
-
-    [Column(TypeName = "datetime")]
     public DateTime UploadedAt { get; set; }
 
-    public bool IsCurrent { get; set; }
+    
 
-    [InverseProperty("Resume")]
-    public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
 
-    [ForeignKey("CandidateId")]
-    [InverseProperty("Resumes")]
-    public virtual CandidateProfile Candidate { get; set; } = null!;
+    // 🔥 ADD THIS (fixes your error)
+    public ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
 }

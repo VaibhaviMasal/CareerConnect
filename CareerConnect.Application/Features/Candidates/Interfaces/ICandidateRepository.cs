@@ -4,7 +4,10 @@ namespace CareerConnect.Application.Features.Candidates.Interfaces
 {
     public interface ICandidateRepository
     {
+        Task AddAsync(CandidateProfile candidate);
         Task<CandidateProfile?> GetByUserIdAsync(int userId);
-        Task AddAsync(CandidateProfile profile);
+        Task<CandidateProfile?> GetByIdAsync(int id);
+        Task UpdateAsync(CandidateProfile candidate);
+        Task DeleteAsync(CandidateProfile candidate);
     }
 }
