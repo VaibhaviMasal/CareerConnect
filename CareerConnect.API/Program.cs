@@ -26,6 +26,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
+using CareerConnect.Infrastructure.Seed;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -148,6 +150,17 @@ builder.Services.AddSwaggerGen(options =>
 // =====================
 var app = builder.Build();
 
+// =====================
+// DATABASE SEEDING
+// =====================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<CareerConnectDbContext>();
+
+    await DbSeeder.SeedAsync(context);
+}
 
 // =====================
 // MIDDLEWARE PIPELINE
