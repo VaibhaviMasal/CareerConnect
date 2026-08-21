@@ -64,7 +64,12 @@ public class AuthController : ControllerBase
     [HttpGet("me")]
     public IActionResult GetCurrentUser()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        var userId = int.Parse(userIdClaim);
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
         var role = User.Claims
     .FirstOrDefault(c => c.Type.Contains("role"))?.Value;

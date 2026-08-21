@@ -44,8 +44,10 @@ public class GlobalExceptionMiddleware
 
         var result = JsonSerializer.Serialize(new
         {
+            success = false,
             message = ex.Message,
-            statusCode
+            statusCode,
+            timestamp = DateTime.UtcNow
         });
 
         await response.WriteAsync(result);
